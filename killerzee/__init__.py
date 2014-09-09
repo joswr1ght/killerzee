@@ -329,7 +329,7 @@ class KillerZee:
         self.dev.makePktFLEN(plen)
 
 
-    def inject_r2(self, packet, count=1, delay=1, beam=True):
+    def inject_r2(self, packet, count=1, delay=1, beam=False):
         '''
         Injects the specified packet contents.
         @type packet: String
@@ -361,7 +361,7 @@ class KillerZee:
         self.dev.makePktFLEN(len(ppdu))
         while count != 0:
             if beam:
-                for i in range(300):
+                for i in range(100):
                     self.dev.RFxmit(beamdata)
 
             self.dev.RFxmit(ppdu)

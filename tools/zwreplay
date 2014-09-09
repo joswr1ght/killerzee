@@ -31,7 +31,7 @@ if __name__ == "__main__":
     packetcount=0
 
     # Command-line arguments
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument('-r', '--readfile', dest='rpcapfile', action='store', help='read packets from the specified libpcap file')
     parser.add_argument('-p', '--profile', dest='rfprofile', action='store', default="R2", help='specify the RF profile (one or R1, R2, or R3)')
     parser.add_argument('-c', '--country', dest='countrycode', action='store', default="US", help='specify the 2-letter country code')

