@@ -10,6 +10,11 @@ import sys
 err = ""
 
 try:
+    import usb
+except ImportError:
+    err += "usb (apt-get install python-usb)\n"
+
+try:
     import rflib
 except ImportError:
     err += "rfcat and rflib (https://bitbucket.org/atlas0fd00m/rfcat)\n"
@@ -20,7 +25,7 @@ if err != "":
 Library requirements not met.  Install the following libraries, then re-run
 the setup script.
 
-    """, err
+""", err
     sys.exit(1)
 
 setup  (name        = 'killerzee',
